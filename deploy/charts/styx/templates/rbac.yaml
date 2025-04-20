@@ -1,0 +1,72 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ include "styx.serviceAccountName" . }}
+  labels:
+    {{- include "styx.labels" . | nindent 4 }}
+  {{- with .Values.serviceAccount.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "styx.fullname" . }}
+  labels:
+    {{- include "styx.labels" . | nindent 4 }}
+rules:
+  # Pod permissions
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  - apiGroups: [""]
+    resources: ["pods/status"]
+    verbs: ["get", "update", "patch"]
+  - apiGroups: [""]
+    resources: ["pods/finalizers"]
+    verbs: ["update"]
+
+  # Crossplane resource permissions
+  - apiGroups: ["compute.gcp.upbound.io"]
+    resources: ["*"]
+    verbs: ["get", "list", "watch", "update", "patch"]
+  - apiGroups: ["storage.gcp.upbound.io"]
+    resources: ["*"]
+    verbs: ["get", "list", "watch", "update", "patch"]
+  - apiGroups: ["sql.gcp.upbound.io"]
+    resources: ["*"]
+    verbs: ["get", "list", "watch", "update", "patch"]
+  - apiGroups: ["redis.gcp.upbound.io"]
+    resources: ["*"]
+    verbs: ["get", "list", "watch", "update", "patch"]
+  - apiGroups: ["bigtable.gcp.upbound.io"]
+    resources: ["*"]
+    verbs: ["get", "list", "watch", "update", "patch"]
+  - apiGroups: ["spanner.gcp.upbound.io"]
+    resources: ["*"]
+    verbs: ["get", "list", "watch", "update", "patch"]
+  - apiGroups: ["pubsub.gcp.upbound.io"]
+    resources: ["*"]
+    verbs: ["get", "list", "watch", "update", "patch"]
+  - apiGroups: ["cloudfunctions.gcp.upbound.io"]
+    resources: ["*"]
+    verbs: ["get", "list", "watch", "update", "patch"]
+  - apiGroups: ["cloudplatform.gcp.upbound.io"]
+    resources: ["*"]
+    verbs: ["get", "list", "watch", "update", "patch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "styx.fullname" . }}
+  labels:
+    {{- include "styx.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ include "styx.fullname" . }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "styx.serviceAccountName" . }}
+    namespace: {{ .Release.Namespace }} 

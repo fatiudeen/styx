@@ -1,0 +1,55 @@
+replicaCount: 1
+
+image:
+  repository: ghcr.io/deen/styx
+  pullPolicy: IfNotPresent
+  tag: "0.1.0"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# GCP configuration
+gcp:
+  projectID: ""
+  # Service account key for GCP API access
+  serviceAccountKey: ""
+  # List of GCP resources to monitor and label
+  resources:
+    - compute
+    - storage
+    - sql
+    - spanner
+    - functions 
